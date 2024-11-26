@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mi Juego de Disparos 3D</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #222;
+        }
+        #unity-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #unity-canvas {
+            width: 960px;
+            height: 600px;
+            background: #231F20;
+        }
+        #loading-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .progress-bar {
+            width: 300px;
+            height: 20px;
+            background-color: #333;
+            border-radius: 10px;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+        .progress {
+            width: 0%;
+            height: 100%;
+            background-color: #4CAF50;
+            transition: width 0.3s ease;
+        }
+        #instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="unity-container">
+        <canvas id="unity-canvas"></canvas>
+        <div id="loading-container">
+            <h2>Cargando juego...</h2>
+            <div class="progress-bar">
+                <div class="progress" id="unity-progress-bar"></div>
+            </div>
+            <div id="unity-loading-bar-text"></div>
+        </div>
+        <div id="instructions">
+            <p>Controles: WASD para moverse | Mouse para apuntar | Click izquierdo para disparar</p>
+            <p>ESC para mostrar/ocultar el cursor</p>
+        </div>
+    </div>
+    <script>
+        var buildUrl = "Build";
+        var loaderUrl = buildUrl + "/docs.loader.js";
+        var config = {
+            dataUrl: buildUrl + "/docs.data",
+            frameworkUrl: buildUrl + "/docs.framework.js",
+            codeUrl: buildUrl + "/docs.wasm",
+            streamingAssetsUrl: "StreamingAssets",
+            companyName: "TuCompañía",
+            productName: "Juego de Disparos 3D",
+            productVersion: "1.0",
+        };
+
+        var container = document.querySelector("#unity-container");
+        var canvas = document.querySelector("#unity-canvas");
+        var loadingBar = document.querySelector("#unity-loading-bar");
+        var progressBar = document.querySelector("#unity-progress-bar");
+        var loadingBarText = document.querySelector("#unity-loading-bar-text");
+
+        var script = document.createElement("script");
+        script.src = loaderUrl;
+        script.onload = () => {
+            createUnityInstance(canvas, config, (progress) => {
+                progressBar.style.width = 100 * progress + "%";
+                loadingBarText.textContent = Math.round(progress * 100) + "%";
+            }).then((unityInstance) => {
+                loadingContainer.style.display = "none";
+            }).catch((message) => {
+                alert(message);
+            });
+        };
+        document.body.appendChild(script);
+    </script>
+</body>
+</html>
